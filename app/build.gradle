@@ -1,0 +1,38 @@
+plugins {
+    id 'java'
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // 🔹 JUnit 5 untuk unit testing
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+
+    // 🔹 RestAssured untuk API Testing
+    testImplementation 'io.rest-assured:rest-assured:5.4.0'
+
+    // 🔹 Selenium untuk UI Testing (gunakan hanya versi terbaru)
+    testImplementation 'org.seleniumhq.selenium:selenium-java:4.16.1'
+
+    // 🔹 WebDriverManager untuk otomatisasi WebDriver
+    testImplementation 'io.github.bonigarcia:webdrivermanager:5.6.0'
+
+    // 🔹 Cucumber untuk BDD Testing
+    testImplementation 'io.cucumber:cucumber-java:7.15.0'
+    testImplementation 'io.cucumber:cucumber-junit-platform-engine:7.15.0' // Sesuai dengan JUnit 5
+
+    // 🔹 Slf4j untuk logging
+    testImplementation 'org.slf4j:slf4j-simple:2.0.9'
+}
+
+test {
+    useJUnitPlatform()
+}
