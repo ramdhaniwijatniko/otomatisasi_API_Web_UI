@@ -22,21 +22,29 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
+      - name: Install Chrome & ChromeDriver
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+          CHROME_VERSION=$(google-chrome --version | awk '{print $3}')
+          CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION)
+          curl -Lo chromedriver_linux64.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
+          unzip chromedriver_linux64.zip
+          sudo mv chromedriver /usr/local/bin/
+          rm chromedriver_linux64.zip
+
       - name: Grant Execute Permission to Gradle Wrapper
-        run: chmod +x gradlew  # <- Tambahkan izin eksekusi
+        run: chmod +x gradlew
 
       - name: Build Project
-        run: ./gradlew build
+        run: ./gradlew build --warning-mode all
 
       - name: Run Tests
-        run: ./gradlew test
-
-      - name: Ensure Download Info
-        uses: actions/download-artifact@v4
+        run: ./gradlew test --warning-mode all
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: build/reports/tests/test/
-          if-no-files-found: ignore  # Menghindari error jika laporan tidak ditemukan
+          path: app/build/reports/tests/test/
+          if-no-files-found: ignore
