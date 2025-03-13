@@ -36,11 +36,11 @@ jobs:
       - name: Run API & Web UI Tests
         run: ./gradlew clean test
 
-      - name: Upload Test Reports
+      - name: Upload Test Results
         uses: actions/upload-artifact@v3
         with:
-          name: test-reports
-          path: app/build/reports/tests/test
+         name: test-results
+         path: app/build/reports/tests/test/
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
