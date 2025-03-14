@@ -29,7 +29,7 @@ jobs:
       - name: Install ChromeDriver (Chrome for Testing)
         run: |
           sudo apt-get update
-          sudo apt-get install -y curl unzip
+          sudo apt-get install -y curl unzip jq
       
           # Ambil versi Chrome yang terinstall
           CHROME_VERSION=$(google-chrome --version | grep -oP '[0-9]+\.[0-9]+\.[0-9]+')
@@ -37,12 +37,17 @@ jobs:
           
           echo "Chrome Version: $CHROME_VERSION (Major: $CHROME_MAJOR_VERSION)"
           
-          # Gunakan API resmi untuk mendapatkan ChromeDriver yang sesuai
+          # Gunakan API Chrome for Testing untuk mendapatkan versi terbaru ChromeDriver
           API_URL="https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json"
-          CHROMEDRIVER_URL=$(curl -sS $API_URL | jq -r --arg ver "$CHROME_VERSION" '.versions[] | select(.version==$ver) | .downloads.chromedriver[] | select(.platform=="linux64") | .url')
+          CHROMEDRIVER_URL=$(curl -sS $API_URL | jq -r '.versions[-1].downloads.chromedriver[] | select(.platform=="linux64") | .url')
       
           if [ -z "$CHROMEDRIVER_URL" ]; then
-            echo "Error: No matching ChromeDriver found for version $CHROME_VERSION"
+            echo "Error: No matching ChromeDriver found. Trying latest stable..."
+            CHROMEDRIVER_URL=$(curl -sS $API_URL | jq -r '.versions[] | .downloads.chromedriver[] | select(.platform=="linux64") | .url' | head -n 1)
+          fi
+      
+          if [ -z "$CHROMEDRIVER_URL" ]; then
+            echo "Error: Failed to retrieve ChromeDriver version!"
             exit 1
           fi
       
@@ -54,6 +59,7 @@ jobs:
           rm -rf chromedriver_linux64.zip chromedriver-linux64
       
           echo "ChromeDriver installed successfully!"
+      
       
 
 
