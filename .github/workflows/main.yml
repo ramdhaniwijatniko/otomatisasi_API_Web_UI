@@ -59,9 +59,6 @@ jobs:
           rm -rf chromedriver_linux64.zip chromedriver-linux64
       
           echo "ChromeDriver installed successfully!"
-      
-      
-
 
       - name: Grant Execute Permission to Gradle Wrapper
         run: chmod +x gradlew
