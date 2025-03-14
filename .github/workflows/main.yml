@@ -20,45 +20,27 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '17'
 
-      - name: Install jq (JSON processor)
-        run: sudo apt-get install -y jq
-
-          
-      - name: Install ChromeDriver (Chrome for Testing)
+      - name: Install Dependencies (jq, Chrome, ChromeDriver)
         run: |
           sudo apt-get update
-          sudo apt-get install -y curl unzip jq
-      
-          # Ambil versi Chrome yang terinstall
-          CHROME_VERSION=$(google-chrome --version | grep -oP '[0-9]+\.[0-9]+\.[0-9]+')
-          CHROME_MAJOR_VERSION=$(echo $CHROME_VERSION | cut -d. -f1)
+          sudo apt-get install -y jq google-chrome-stable
           
-          echo "Chrome Version: $CHROME_VERSION (Major: $CHROME_MAJOR_VERSION)"
-          
-          # Gunakan API Chrome for Testing untuk mendapatkan versi terbaru ChromeDriver
+          # Ambil URL ChromeDriver yang cocok dengan Chrome
           API_URL="https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json"
           CHROMEDRIVER_URL=$(curl -sS $API_URL | jq -r '.versions[-1].downloads.chromedriver[] | select(.platform=="linux64") | .url')
-      
+
           if [ -z "$CHROMEDRIVER_URL" ]; then
-            echo "Error: No matching ChromeDriver found. Trying latest stable..."
-            CHROMEDRIVER_URL=$(curl -sS $API_URL | jq -r '.versions[] | .downloads.chromedriver[] | select(.platform=="linux64") | .url' | head -n 1)
-          fi
-      
-          if [ -z "$CHROMEDRIVER_URL" ]; then
-            echo "Error: Failed to retrieve ChromeDriver version!"
+            echo "Error: No matching ChromeDriver found!"
             exit 1
           fi
-      
+
           echo "Downloading ChromeDriver from: $CHROMEDRIVER_URL"
-          curl -Lo chromedriver_linux64.zip "$CHROMEDRIVER_URL"
-      
-          unzip chromedriver_linux64.zip
+          curl -Lo chromedriver.zip "$CHROMEDRIVER_URL"
+          unzip chromedriver.zip
           sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
-          rm -rf chromedriver_linux64.zip chromedriver-linux64
-      
-          echo "ChromeDriver installed successfully!"
+          rm -rf chromedriver.zip chromedriver-linux64
 
       - name: Grant Execute Permission to Gradle Wrapper
         run: chmod +x gradlew
