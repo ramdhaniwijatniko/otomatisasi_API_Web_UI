@@ -7,8 +7,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import io.github.bonigarcia.wdm.WebDriverManager;
-
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -18,8 +18,15 @@ public class LoginTest {
     @BeforeEach
     public void setUp() {
         // Gunakan WebDriverManager untuk mengelola ChromeDriver secara otomatis
-        WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver();
+        WebDriverManager.chromedriver().avoidShutdownHook().setup();
+
+        // Konfigurasi Chrome agar berjalan di lingkungan CI/CD
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless");  // Tambahkan mode headless
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+
+        driver = new ChromeDriver(options);
         driver.manage().window().maximize();
     }
 

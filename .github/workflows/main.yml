@@ -42,6 +42,12 @@ jobs:
           sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
           rm -rf chromedriver.zip chromedriver-linux64
 
+      - name: Debug Chrome & ChromeDriver Version
+        run: |
+            echo "Checking installed versions..."
+            google-chrome --version
+            chromedriver --version
+
       - name: Grant Execute Permission to Gradle Wrapper
         run: chmod +x gradlew
 
