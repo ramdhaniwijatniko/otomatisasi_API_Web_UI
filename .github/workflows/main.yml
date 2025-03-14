@@ -27,12 +27,15 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y google-chrome-stable
             CHROME_VERSION=$(google-chrome --version | grep -oP '[0-9]+\.[0-9]+\.[0-9]+')
-            echo "Chrome Version: $CHROME_VERSION"
+            CHROME_MAJOR_VERSION=$(echo $CHROME_VERSION | cut -d. -f1)
             
-            CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION" || curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE")
+            echo "Chrome Version: $CHROME_VERSION (Major: $CHROME_MAJOR_VERSION)"
+            
+            CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_MAJOR_VERSION" || curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE")
+          
             echo "ChromeDriver Version: $CHROMEDRIVER_VERSION"
-        
-            if [ -z "$CHROMEDRIVER_VERSION" ]; then
+            
+            if [[ "$CHROMEDRIVER_VERSION" == *"Error"* || -z "$CHROMEDRIVER_VERSION" ]]; then
               echo "Error: Failed to retrieve ChromeDriver version!"
               exit 1
             fi
@@ -41,6 +44,7 @@ jobs:
             unzip chromedriver_linux64.zip
             sudo mv chromedriver /usr/local/bin/
             rm chromedriver_linux64.zip
+        
         
 
       - name: Grant Execute Permission to Gradle Wrapper
